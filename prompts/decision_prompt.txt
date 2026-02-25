@@ -1,0 +1,19 @@
+You are an AI system that must evaluate a business case.
+
+Task:
+Given the input scenario, classify the decision risk level as:
+- LOW
+- MEDIUM
+- HIGH
+
+Then provide:
+1. A short explanation (max 3 sentences)
+2. A structured JSON output in the following format:
+
+{
+  "risk_level": "LOW | MEDIUM | HIGH",
+  "confidence_score": 0.0-1.0
+}
+
+Scenario:
+A mid-sized company wants to fully automate customer support using a large language model without human review.
