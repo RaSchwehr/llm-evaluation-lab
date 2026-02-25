@@ -2,11 +2,11 @@ name: eval
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main, develop, "feature/**" ]
   pull_request:
 
 jobs:
-  baseline:
+  eval:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,7 +18,34 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Run baseline eval
+      - name: Install dependencies
         run: |
-          python -V
-          python src/eval_local.py
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run eval
+        run: |
+          python eval/run_eval.py
+
+      - name: Create GitHub Job Summary
+        run: |
+          echo "## ✅ Eval Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Artifacts: **reports/latest.json** + **reports/latest.md**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f reports/latest.md ]; then
+            echo "### Report" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            cat reports/latest.md >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ reports/latest.md not found" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload reports as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-reports
+          path: |
+            reports/latest.json
+            reports/latest.md
+          if-no-files-found: error
