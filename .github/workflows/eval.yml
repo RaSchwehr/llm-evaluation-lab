@@ -24,28 +24,25 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Run eval
+        env:
+          EVAL_THRESHOLD: "0.70"
         run: |
           python eval/run_eval.py
 
       - name: Create GitHub Job Summary
+        if: always()
         run: |
           echo "## ✅ Eval Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Artifacts: **reports/latest.json** + **reports/latest.md**" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
           if [ -f reports/latest.md ]; then
-            echo "### Report" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
             cat reports/latest.md >> $GITHUB_STEP_SUMMARY
           else
-            echo "⚠️ reports/latest.md not found" >> $GITHUB_STEP_SUMMARY
+            echo "No report found." >> $GITHUB_STEP_SUMMARY
           fi
 
-      - name: Upload reports as artifact
+      - name: Upload reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: eval-reports
-          path: |
-            reports/latest.json
-            reports/latest.md
-          if-no-files-found: error
+          path: reports/
