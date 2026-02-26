@@ -1,2 +1,8 @@
 reports/latest.json
 reports/latest.md
+
+# generated eval reports
+reports/latest*.json
+reports/latest*.md
+reports/compare.json
+reports/compare.md
