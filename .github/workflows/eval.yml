@@ -23,12 +23,20 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Run eval
+      # Wichtig: Reports-Ordner existiert immer
+      - name: Prepare reports dir
+        run: |
+          mkdir -p reports
+
+      # CI soll NICHT Ollama nutzen (weil GitHub Runner keinen lokalen Ollama hat)
+      - name: Run eval (CI-safe)
         env:
           EVAL_THRESHOLD: "0.70"
+          EVAL_MODE: "CI"   # <= du kannst das in run_eval.py auswerten, falls du willst
         run: |
           python eval/run_eval.py
 
+      # Falls run_eval.py vorzeitig stirbt, erzeugen wir trotzdem eine Job Summary
       - name: Create GitHub Job Summary
         if: always()
         run: |
@@ -37,12 +45,14 @@ jobs:
           if [ -f reports/latest.md ]; then
             cat reports/latest.md >> $GITHUB_STEP_SUMMARY
           else
-            echo "No report found." >> $GITHUB_STEP_SUMMARY
+            echo "No report found (script may have failed before writing reports)." >> $GITHUB_STEP_SUMMARY
           fi
 
+      # Upload artifacts nur wenn etwas da ist (sonst Warnung/Fail vermeiden)
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: eval-reports
-          path: reports/
+          path: reports
+          if-no-files-found: warn
