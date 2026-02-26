@@ -1,0 +1,6 @@
+{
+  "accuracy": 0.8,
+  "threshold": 0.7,
+  "timestamp_utc": "2026-02-26T00:00:00Z",
+  "note": "Initial baseline"
+}
