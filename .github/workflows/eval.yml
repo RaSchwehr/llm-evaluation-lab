@@ -26,6 +26,8 @@ jobs:
       - name: Run eval
         env:
           EVAL_THRESHOLD: "0.70"
+          EVAL_MAX_DROP: "0.02"              # max. 2 Prozentpunkte schlechter als Baseline erlaubt
+          EVAL_BASELINE_PATH: "reports/baseline.json"
         run: |
           python eval/run_eval.py
 
