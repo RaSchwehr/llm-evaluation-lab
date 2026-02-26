@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv/
+
+# Eval generated reports
+reports/latest.md
+reports/latest.json
+
+# macOS
+.DS_Store
